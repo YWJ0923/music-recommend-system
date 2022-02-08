@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ywj.music_recommend_system.front.dao.UserPlayTimesMapper">
+    <resultMap id="MusicVOMap" type="com.ywj.music_recommend_system.front.VO.MusicVO">
+        <id column="music_id" property="musicId" jdbcType="VARCHAR" />
+        <result column="music_name" property="musicName" jdbcType="VARCHAR" />
+        <result column="artist_id" property="artistId" jdbcType="VARCHAR" />
+        <result column="artist_name" property="artistName" jdbcType="VARCHAR" />
+        <result column="album_id" property="albumId" jdbcType="VARCHAR" />
+        <result column="album_name" property="albumName" jdbcType="VARCHAR" />
+        <result column="album_img" property="albumImg" jdbcType="VARCHAR" />
+        <result column="time_length" property="timeLength" jdbcType="INTEGER" />
+        <result column="user_play_times" property="userPlayTimes" jdbcType="INTEGER" />
+        <result column="total_play_times" property="totalPlayTimes" jdbcType="INTEGER" />
+    </resultMap>
+    <insert id="insertUserPlayTimes">
+        INSERT INTO user_play (user_id,music_id,time_length)VALUES(#{userId},#{musicId},#{timeLength})
+    </insert>
+    <select id="listUserMusicsOrderByPlayTimes" resultMap="MusicVOMap">
+        SELECT t1.music_id,t2.music_name,t3.artist_id,t3.artist_name,t4.album_id,t4.album_name,t4.album_img,t2.time_length,t1.user_play_times
+        FROM
+        (SELECT COUNT(*) AS user_play_times,music_id FROM user_play
+        WHERE user_id=#{userId}
+        GROUP BY music_id
+        ORDER BY user_play_times DESC
+        LIMIT 20) AS t1 INNER JOIN music AS t2 INNER JOIN artist AS t3 INNER JOIN album AS t4
+        ON t1.music_id=t2.music_id AND t2.artist_id=t3.artist_id AND t2.album_id=t4.album_id AND t3.artist_id=t4.artist_id
+    </select>
+</mapper>

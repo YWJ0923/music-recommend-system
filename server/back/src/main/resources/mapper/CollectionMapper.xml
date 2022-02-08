@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ywj.music_recommend_system.dao.CollectionMapper">
+    <resultMap id="CollectionListVOMap" type="com.ywj.music_recommend_system.VO.front.CollectionListVO">
+        <id column="collection_list_id" property="collectionListId" jdbcType="INTEGER" />
+        <result column="collection_list_name" property="collectionListName" jdbcType="VARCHAR" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="create_date" property="createDate" jdbcType="DATE" />
+        <result column="collection_list_img" property="collectionListImg" />
+        <result column="collection_list_length" property="collectionListLength" />
+        <collection property="musicVOList" ofType="com.ywj.music_recommend_system.VO.front.MusicVO">
+            <id column="music_id" property="musicId" jdbcType="VARCHAR" />
+            <result column="music_name" property="musicName" jdbcType="VARCHAR" />
+            <result column="artist_id" property="artistId" jdbcType="VARCHAR" />
+            <result column="artist_name" property="artistName" jdbcType="VARCHAR" />
+            <result column="album_id" property="albumId" jdbcType="VARCHAR" />
+            <result column="album_name" property="albumName" jdbcType="VARCHAR" />
+            <result column="album_img" property="albumImg" jdbcType="VARCHAR" />
+            <result column="time_length" property="timeLength" jdbcType="INTEGER" />
+        </collection>
+    </resultMap>
+    <select id="listCollectionListsByUserId" resultMap="CollectionListVOMap">
+        select t1.collection_list_id,t1.collection_list_name,t1.collection_list_img,DATE(t1.gmt_create) as create_date,count(t2.music_collection_list_id) as collection_list_length
+        from collection_list as t1 left join music_collection_list as t2
+        on t1.collection_list_id=t2.collection_list_id
+        where t1.user_id=#{userId} and t1.is_deleted=0
+        group by t1.collection_list_id
+        order by t1.gmt_create desc
+    </select>
+    <select id="getCollectionListByCollectionListId" resultMap="CollectionListVOMap">
+        select t1.music_id,t1.music_name,t2.artist_id,t2.artist_name,t3.album_id,t3.album_name,t3.album_img,t1.time_length,t4.collection_list_id,t4.collection_list_name,t4.user_id,t4.create_date,t4.collection_list_img
+        from music as t1 inner join artist as t2 inner join album as t3 RIGHT JOIN
+        (select t2.music_id,t1.collection_list_id,t1.collection_list_name,t1.user_id,DATE(t1.gmt_create) as create_date,t2.gmt_modified,t1.collection_list_img
+        from collection_list as t1 left join music_collection_list as t2
+        on t1.collection_list_id=t2.collection_list_id
+        where t1.collection_list_id=#{collectionListId}) as t4
+        on t1.artist_id=t2.artist_id and t1.album_id=t3.album_id and t2.artist_id=t3.artist_id and t1.music_id=t4.music_id
+        order by t4.gmt_modified desc
+    </select>
+    <insert id="insertMusicToCollectionList">
+        insert into music_collection_list (music_id,collection_list_id)values(#{musicId},#{collectionListId})
+    </insert>
+    <select id="getMusicCollectionListId" resultType="java.lang.Integer">
+        select music_collection_list_id from music_collection_list where music_id=#{musicId} and collection_list_id=#{collectionListId} and is_deleted=0
+    </select>
+    <insert id="insertCollectionList">
+        insert into collection_list (collection_list_name,user_id)values(#{collectionListName},#{userId})
+    </insert>
+    <select id="getCollectionListIdByCollectionListNameAndUserId" resultType="java.lang.Integer">
+        select collection_list_id from collection_list where collection_list_name=#{collectionListName} and user_id=#{userId} order by gmt_create desc limit 1
+    </select>
+    <update id="updateCollectionListImg">
+        update collection_list set collection_list_img=
+        (select t1.album_img from album as t1 inner join music as t2
+        on t1.album_id=t2.album_id
+        where t2.music_id=#{musicId})
+        where collection_list_id=#{collectionListId}
+    </update>
+    <delete id="deleteCollectionList">
+        update collection_list
+        set is_deleted=1
+        where collection_list_id=#{collectionListId}
+    </delete>
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ywj.music_recommend_system.dao.MusicMapper">
+    <resultMap id="BaseResultMap" type="com.ywj.music_recommend_system.entity.Music">
+        <id column="music_id" property="musicId" jdbcType="VARCHAR"/>
+        <result column="music_name" property="musicName" jdbcType="VARCHAR"/>
+        <result column="artist_id" property="artistId" jdbcType="VARCHAR"/>
+        <result column="album_id" property="albumId" jdbcType="VARCHAR"/>
+        <result column="lyric" property="lyric" jdbcType="LONGVARCHAR"/>
+        <result column="play_times" property="playTimes" jdbcType="INTEGER"/>
+        <result column="is_deleted" property="deleted" jdbcType="TINYINT" javaType="java.lang.Boolean"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" javaType="java.lang.String"/>
+        <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" javaType="java.lang.String"/>
+    </resultMap>
+    <resultMap id="MusicSearchVOMap" type="com.ywj.music_recommend_system.VO.MusicSearchVO">
+        <id column="music_id" property="musicId" jdbcType="VARCHAR"/>
+        <result column="music_name" property="musicName" jdbcType="VARCHAR"/>
+        <result column="artist_name" property="artistName" jdbcType="VARCHAR"/>
+        <result column="album_name" property="albumName" jdbcType="VARCHAR"/>
+        <result column="play_times" property="playTimes" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="MusicUpdateVOMap" type="com.ywj.music_recommend_system.VO.MusicUpdateVO">
+        <id column="music_id" property="musicId" jdbcType="VARCHAR"/>
+        <result column="music_name" property="musicName" jdbcType="VARCHAR"/>
+        <result column="artist_name" property="artistName" jdbcType="VARCHAR"/>
+        <result column="album_name" property="albumName" jdbcType="VARCHAR"/>
+        <result column="lyric" property="lyric" jdbcType="LONGVARCHAR"/>
+    </resultMap>
+    <resultMap id="MusicVOMap" type="com.ywj.music_recommend_system.VO.front.MusicVO">
+        <id column="music_id" property="musicId" jdbcType="VARCHAR" />
+        <result column="music_name" property="musicName" jdbcType="VARCHAR" />
+        <result column="artist_id" property="artistId" jdbcType="VARCHAR" />
+        <result column="artist_name" property="artistName" jdbcType="VARCHAR" />
+        <result column="album_id" property="albumId" jdbcType="VARCHAR" />
+        <result column="album_name" property="albumName" jdbcType="VARCHAR" />
+        <result column="album_img" property="albumImg" jdbcType="VARCHAR" />
+        <result column="time_length" property="timeLength" jdbcType="INTEGER" />
+    </resultMap>
+    <sql id="BaseColomn">
+        music_id,music_name,artist_id,album_id,lyric,music_url,play_times,is_deleted,gmt_create,gmt_modified
+    </sql>
+    <select id="listMusicsByName" resultMap="MusicSearchVOMap">
+        select t1.music_id,t1.music_name,t2.artist_name,t3.album_name,t1.play_times
+        from music as t1 inner join artist as t2 inner join album as t3
+        on t1.artist_id=t2.artist_id and t1.album_id=t3.album_id and t2.artist_id=t3.artist_id
+        where (t1.music_name=#{name} or t2.artist_name=#{name} or t3.album_name=#{name}) and t1.is_deleted=0 and t2.is_deleted=0 and t3.is_deleted=0
+    </select>
+    <select id="countMusicByMusicName" parameterType="java.lang.String" resultType="int">
+        select count(*)
+        from music
+        where music.music_name=#{name} and is_deleted=0
+    </select>
+    <select id="countMusicByArtistName" parameterType="java.lang.String" resultType="int">
+        select count(*)
+        from music as t1 inner join artist as t2
+        where t1.artist_id=t2.artist_id and t2.artist_name=#{name}
+    </select>
+    <select id="getMusicUpdateVOByMusicId" resultMap="MusicUpdateVOMap">
+        select t1.music_id,t1.music_name,t2.artist_name,t3.album_name,t1.lyric
+        from music3 as t1 inner join artist as t2 inner join album as t3
+        on t1.artist_id=t2.artist_id and t1.album_id=t3.album_id
+        where t1.music_id=#{musicId}
+    </select>
+    <update id="updatePlayTimesByMusicId" parameterType="java.lang.String">
+        update music set play_times=play_times+1 where music_id=#{musicId}
+    </update>
+    <select id="listMusicsByNameRegExp" resultMap="MusicVOMap">
+        SELECT t1.music_id,t1.music_name,t2.artist_id,t2.artist_name,t3.album_id,t3.album_name,t3.album_img,t1.time_length
+        FROM music AS t1 INNER JOIN artist AS t2 INNER JOIN album AS t3
+        ON t1.artist_id=t2.artist_id AND t1.album_id=t3.album_id AND t2.artist_id=t3.artist_id
+        WHERE t1.music_name REGEXP #{musicName}
+        ORDER BY t1.play_times DESC
+    </select>
+</mapper>

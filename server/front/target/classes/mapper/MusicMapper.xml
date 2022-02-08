@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ywj.music_recommend_system.front.dao.MusicMapper">
+    <resultMap id="BaseResultMap" type="com.ywj.music_recommend_system.front.entity.Music">
+        <id column="music_id" property="musicId" jdbcType="VARCHAR"/>
+        <result column="music_name" property="musicName" jdbcType="VARCHAR"/>
+        <result column="artist_id" property="artistId" jdbcType="VARCHAR"/>
+        <result column="album_id" property="albumId" jdbcType="VARCHAR"/>
+        <result column="lyric" property="lyric" jdbcType="LONGVARCHAR"/>
+        <result column="play_times" property="playTimes" jdbcType="INTEGER"/>
+        <result column="is_deleted" property="deleted" jdbcType="TINYINT" javaType="java.lang.Boolean"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" javaType="java.lang.String"/>
+        <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" javaType="java.lang.String"/>
+    </resultMap>
+    <resultMap id="MusicVOMap" type="com.ywj.music_recommend_system.front.VO.MusicVO">
+        <id column="music_id" property="musicId" jdbcType="VARCHAR" />
+        <result column="music_name" property="musicName" jdbcType="VARCHAR" />
+        <result column="artist_id" property="artistId" jdbcType="VARCHAR" />
+        <result column="artist_name" property="artistName" jdbcType="VARCHAR" />
+        <result column="album_id" property="albumId" jdbcType="VARCHAR" />
+        <result column="album_name" property="albumName" jdbcType="VARCHAR" />
+        <result column="album_img" property="albumImg" jdbcType="VARCHAR" />
+        <result column="time_length" property="timeLength" jdbcType="INTEGER" />
+    </resultMap>
+
+    <select id="countMusicByMusicName" parameterType="java.lang.String" resultType="int">
+        select count(*)
+        from music
+        where music.music_name=#{name} and is_deleted=0
+    </select>
+
+    <select id="countMusicByArtistName" parameterType="java.lang.String" resultType="int">
+        select count(*)
+        from music as t1 inner join artist as t2
+        where t1.artist_id=t2.artist_id and t2.artist_name=#{name}
+    </select>
+
+    <update id="updatePlayTimesByMusicId" parameterType="java.lang.String">
+        update music set play_times=play_times+1 where music_id=#{musicId}
+    </update>
+
+    <select id="listMusicsByNameRegExp" resultMap="MusicVOMap">
+        SELECT t1.music_id,t1.music_name,t2.artist_id,t2.artist_name,t3.album_id,t3.album_name,t3.album_img,t1.time_length
+        FROM music AS t1 INNER JOIN artist AS t2 INNER JOIN album AS t3
+        ON t1.artist_id=t2.artist_id AND t1.album_id=t3.album_id AND t2.artist_id=t3.artist_id
+        WHERE t1.music_name REGEXP #{name} OR t2.artist_name REGEXP #{name}
+        ORDER BY t1.play_times DESC
+    </select>
+
+    <select id="getTopList" resultMap="MusicVOMap">
+        SELECT t1.music_id,t1.music_name,t2.artist_id,t2.artist_name,t3.album_id,t3.album_name,t3.album_img,t1.time_length
+        FROM music AS t1 INNER JOIN artist AS t2 INNER JOIN album AS t3
+                                                            ON t1.artist_id=t2.artist_id AND t1.album_id=t3.album_id AND t2.artist_id=t3.artist_id
+        ORDER BY t1.play_times DESC
+            limit 20
+    </select>
+
+    <select id="getTopListByArtistLocation" resultMap="MusicVOMap">
+        SELECT t1.music_id,t1.music_name,t2.artist_id,t2.artist_name,t3.album_id,t3.album_name,t3.album_img,t1.time_length
+        FROM music AS t1 INNER JOIN artist AS t2 INNER JOIN album AS t3
+        ON t1.artist_id=t2.artist_id AND t1.album_id=t3.album_id AND t2.artist_id=t3.artist_id
+        where t2.artist_location=#{artistLocation}
+        ORDER BY t1.play_times DESC
+        limit 20
+    </select>
+
+    <select id="listLatestMusics" resultMap="MusicVOMap">
+        SELECT t1.music_id,t1.music_name,t2.artist_id,t2.artist_name,t3.album_id,t3.album_name,t3.album_img,t1.time_length
+        FROM music AS t1 INNER JOIN artist AS t2 INNER JOIN album AS t3
+        ON t1.artist_id=t2.artist_id AND t1.album_id=t3.album_id AND t2.artist_id=t3.artist_id
+        ORDER BY t1.gmt_create DESC
+        limit 9
+    </select>
+</mapper>

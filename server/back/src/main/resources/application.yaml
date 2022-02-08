@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    druid:
+      url: jdbc:mysql://47.102.130.18:3306/music_recommend?characterEncoding=utf8&setTimezone=Asia/Shanghai&useAffectedRows=true
+      username: root
+      password: 1234
+      initial-size: 1
+      max-active: 20
+      max-wait: 6000
+      min-idle: 1
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml
+server:
+  port: 8081
