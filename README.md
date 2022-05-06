@@ -21,6 +21,6 @@ cookie也没有用，我充了个vip，本来是为了能听付费歌曲，因�
 当拥有一定的用户基数之后，使用协同过滤算法。用户播放过音乐后会对它有个评分，收藏的评分最高，否则按用户听的时长占比打分。推荐时，把所有用户的评分记录拉出来，计算当前用户与其他用户的皮尔逊系数，从而得到与当前用户最相似的用户。然后将那个用户评分高的歌推荐给当前用户。
 
 ## 项目截图
-![](718截图1.png)
-![](718截图2.png)
-![](718截图3.png)
+![](https://gitee.com/ywj0923/music-recommend-system/raw/master/images/718%E6%88%AA%E5%9B%BE1.png)
+![](https://gitee.com/ywj0923/music-recommend-system/raw/master/images/718%E6%88%AA%E5%9B%BE2.png)
+![](https://gitee.com/ywj0923/music-recommend-system/raw/master/images/718%E6%88%AA%E5%9B%BE3.png)
