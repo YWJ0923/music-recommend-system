@@ -1,6 +1,6 @@
 # 718音乐
 
-前端React+Antd，后端SpringBoot，数据库Mysql+Redis
+前端React+Antd，后端SpringBoot，数据库Mysql+Redis，爬虫Python+Selenium
 
 启动方式：
 1. 导入sql文件
