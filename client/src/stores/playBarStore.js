@@ -1,5 +1,6 @@
 import {makeObservable, observable, action, toJS} from 'mobx';
 import {getPlayUrl} from "../utils/play";
+import PubSub from "pubsub-js";
 
 class PlayBarStore {
     playList = [];
@@ -31,6 +32,7 @@ class PlayBarStore {
 
     addMusic = (newMusic) => {
         // console.log(toJS(this.playList));
+        PubSub.publish('addPlayTimes');
         getPlayUrl(toJS(newMusic));
         let newPlayList = this.playList.filter(music => music.musicId !== newMusic.musicId);
         newPlayList.push(newMusic);

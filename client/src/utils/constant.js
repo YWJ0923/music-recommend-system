@@ -1,1 +1,3 @@
-export const SERVER_URL = 'http://localhost:3001/server/'
+export const SERVER_URL = '/server/';
+
+export const KUGOU_URL = '/kugou';

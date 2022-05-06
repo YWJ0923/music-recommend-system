@@ -2,8 +2,8 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ywj.music_recommend_system.front.dao.MusicMapper">
-    <resultMap id="BaseResultMap" type="com.ywj.music_recommend_system.front.entity.Music">
+<mapper namespace="com.music_recommend_system.front.dao.MusicMapper">
+    <resultMap id="BaseResultMap" type="com.music_recommend_system.front.entity.Music">
         <id column="music_id" property="musicId" jdbcType="VARCHAR"/>
         <result column="music_name" property="musicName" jdbcType="VARCHAR"/>
         <result column="artist_id" property="artistId" jdbcType="VARCHAR"/>
@@ -14,7 +14,7 @@
         <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" javaType="java.lang.String"/>
         <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" javaType="java.lang.String"/>
     </resultMap>
-    <resultMap id="MusicVOMap" type="com.ywj.music_recommend_system.front.VO.MusicVO">
+    <resultMap id="MusicVOMap" type="com.music_recommend_system.front.VO.MusicVO">
         <id column="music_id" property="musicId" jdbcType="VARCHAR" />
         <result column="music_name" property="musicName" jdbcType="VARCHAR" />
         <result column="artist_id" property="artistId" jdbcType="VARCHAR" />
@@ -49,12 +49,20 @@
         ORDER BY t1.play_times DESC
     </select>
 
-    <select id="getTopList" resultMap="MusicVOMap">
+    <select id="getTopList20" resultMap="MusicVOMap">
         SELECT t1.music_id,t1.music_name,t2.artist_id,t2.artist_name,t3.album_id,t3.album_name,t3.album_img,t1.time_length
         FROM music AS t1 INNER JOIN artist AS t2 INNER JOIN album AS t3
-                                                            ON t1.artist_id=t2.artist_id AND t1.album_id=t3.album_id AND t2.artist_id=t3.artist_id
+        ON t1.artist_id=t2.artist_id AND t1.album_id=t3.album_id AND t2.artist_id=t3.artist_id
         ORDER BY t1.play_times DESC
-            limit 20
+        limit 20
+    </select>
+
+    <select id="getTopList100" resultMap="MusicVOMap">
+        SELECT t1.music_id,t1.music_name,t2.artist_id,t2.artist_name,t3.album_id,t3.album_name,t3.album_img,t1.time_length
+        FROM music AS t1 INNER JOIN artist AS t2 INNER JOIN album AS t3
+        ON t1.artist_id=t2.artist_id AND t1.album_id=t3.album_id AND t2.artist_id=t3.artist_id
+        ORDER BY t1.play_times DESC
+        limit 100
     </select>
 
     <select id="getTopListByArtistLocation" resultMap="MusicVOMap">

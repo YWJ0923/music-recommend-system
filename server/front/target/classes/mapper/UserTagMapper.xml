@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.music_recommend_system.front.dao.UserTagMapper">
+    <resultMap id="BaseResultMap" type="com.music_recommend_system.front.entity.UserTag">
+        <id property="userTagId" column="user_tag_id" />
+        <result property="userId" column="user_id" />
+        <result property="tagId" column="tag_id" />
+    </resultMap>
+
+    <insert id="insertUserTags">
+        insert into user_tag (user_id,tag_id) values
+        <foreach collection="tags" separator="," item="tag">
+            (#{userId}, #{tag})
+        </foreach>
+    </insert>
+
+    <select id="listUserTags" resultMap="BaseResultMap">
+        select * from user_tag
+        where user_id=#{userId}
+    </select>
+</mapper>

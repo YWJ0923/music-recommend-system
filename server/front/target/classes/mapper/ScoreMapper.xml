@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.music_recommend_system.front.dao.ScoreMapper">
+    <resultMap id="BaseResultMap" type="com.music_recommend_system.front.entity.Score">
+        <id column="score_id" property="scoreId" />
+        <result column="user_id" property="userId" />
+        <result column="music_id" property="musicId" />
+        <result column="score" property="score" />
+    </resultMap>
+    <resultMap id="MusicVOResultMap" type="com.music_recommend_system.front.VO.MusicVO">
+        <id column="music_id" property="musicId" jdbcType="VARCHAR" />
+        <result column="music_name" property="musicName" jdbcType="VARCHAR" />
+        <result column="artist_id" property="artistId" jdbcType="VARCHAR" />
+        <result column="artist_name" property="artistName" jdbcType="VARCHAR" />
+        <result column="album_id" property="albumId" jdbcType="VARCHAR" />
+        <result column="album_name" property="albumName" jdbcType="VARCHAR" />
+        <result column="album_img" property="albumImg" jdbcType="VARCHAR" />
+        <result column="time_length" property="timeLength" jdbcType="INTEGER" />
+    </resultMap>
+
+    <insert id="insertScore">
+        insert into score (user_id,music_id,score) values(#{userId},#{musicId},#{score})
+    </insert>
+
+    <select id="selectScoreByUserIdAndMusicId" resultMap="BaseResultMap">
+        select * from score where user_id=#{userId} and music_id=#{musicId}
+    </select>
+
+    <update id="updateScore">
+        update score set score=#{score} where user_id=#{userId} and music_id=#{musicId}
+    </update>
+
+    <select id="listAllScores" resultMap="BaseResultMap">
+        select * from score
+    </select>
+
+    <select id="listScoresByUserId" resultMap="MusicVOResultMap">
+        SELECT t1.music_id,t1.music_name,t2.artist_id,t2.artist_name,t3.album_id,t3.album_name,t3.album_img,t1.time_length
+        FROM music AS t1 INNER JOIN artist AS t2 INNER JOIN album AS t3
+        ON t1.artist_id=t2.artist_id AND t1.album_id=t3.album_id AND t2.artist_id=t3.artist_id
+        where t1.music_id in (select music_id from score where user_id=#{userId})
+    </select>
+</mapper>

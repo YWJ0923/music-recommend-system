@@ -10,6 +10,7 @@ import { getToken, removeToken } from './utils/auth';
 import 'antd/dist/antd.min.css';
 import './App.css';
 import PubSub from "pubsub-js";
+import {SERVER_URL} from "./utils/constant";
 
 
 const { Content, Footer } = Layout;
@@ -32,7 +33,7 @@ function App(props) {
         if (token) {
             axios({
                 method: 'GET',
-                url: 'http://localhost:3001/server/verify',
+                url: SERVER_URL + 'verify',
                 headers: {
                     Authorization: token
                 }

@@ -27,9 +27,10 @@ function PlayBar(props) {
 
     useEffect(() => {
         PubSub.subscribe('showNewCollectionListModal', showNewCollectionListModal);
-        // PubSub.subscribe('playMusicList', playMusicList);
+        PubSub.subscribe('addPlayTimes', addPlayTimes);
         return () => {
             PubSub.unsubscribe('showNewCollectionListModal');
+            PubSub.unsubscribe('addPlayTimes');
         }  // eslint-disable-next-line
     }, []);
 
@@ -116,7 +117,7 @@ function PlayBar(props) {
     const canPlay = () => {
         setIsPaused(false);
         setBeginTime(new Date().getTime());
-        // console.log(beginTime);
+        console.log(beginTime);
         setDuration(audio1.current.duration);
         audio1.current.play();
     }
@@ -126,7 +127,7 @@ function PlayBar(props) {
         setCurrentTime(audio1.current.currentTime);
     }
 
-    // 停留时间超过30秒，增加播放量、用户播放量，换歌的时候执行
+    // 停留时间超过30秒，增加播放量、用户播放量，换歌的时候执行，添加用户评分
     const addPlayTimes = () => {
         if (playList[index]) {
             const endTime = new Date().getTime();
@@ -153,7 +154,7 @@ function PlayBar(props) {
                         if (response.data.status === 401) {
                             PubSub.publish('logout');
                         }
-                    })
+                    });
                 }
             }
         }

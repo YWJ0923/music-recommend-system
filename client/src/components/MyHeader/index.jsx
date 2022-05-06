@@ -5,6 +5,8 @@ import 'antd/dist/antd.min.css';
 import { LockOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import PubSub from 'pubsub-js';
+import {SERVER_URL} from "../../utils/constant";
+import {getToken} from "../../utils/auth";
 
 const { Header } = Layout;
 const {Search} = Input;
@@ -12,6 +14,8 @@ const {Search} = Input;
 function MyHeader(props) {
     const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
     const [isRegisterModalVisible, setIsRegisterModalVisible] = useState(false);
+    const [isTagModalVisible, setIsTagModalVisible] = useState(false);
+    const [tagList, setTagList] = useState([]);
 
     useEffect(() => {
         PubSub.subscribe('showLoginModal', showLoginModal);
@@ -60,10 +64,58 @@ function MyHeader(props) {
         setIsRegisterModalVisible(false);
     }
 
+    const listTags = () => {
+        axios({
+            method: 'GET',
+            url: SERVER_URL + 'tag'
+        }).then((response) => {
+            if (response.data.status === 200) {
+                let tagList = response.data.data;
+                let tags = [];
+                for (let i = 0; i < tagList.length; i++) {
+                    tags.push({
+                        label: tagList[i].tagName,
+                        value: tagList[i].tagId
+                    });
+                }
+                // console.log(tags);
+                setTagList(tags);
+            }
+        });
+    }
+
+    const showTagModal = () => {
+        listTags();
+        setIsTagModalVisible(true);
+    }
+
+    const closeTagModal = () => {
+        setIsTagModalVisible(false);
+    }
+
+    // 提交选择的标签
+    const insertUserTags = (value) => {
+        console.log(value.tags);
+        if (value.tags.length > 0) {
+            axios({
+                method: 'POST',
+                url: SERVER_URL + 'user_tag',
+                data: {
+                    tags: value.tags
+                },
+                headers: {
+                    Authorization: getToken()
+                }
+            }).then((response) => {
+                closeTagModal();
+            })
+        }
+    }
+
     const login = (value) => {
         axios({
             method: 'POST',
-            url: 'http://localhost:3001/server/login',
+            url: SERVER_URL + 'login',
             data: {
                 username: value.username,
                 password: value.password
@@ -91,7 +143,7 @@ function MyHeader(props) {
         }
         axios({
             method: 'POST',
-            url: 'http://localhost:3001/server/register',
+            url: SERVER_URL + 'register',
             data: {
                 username: value.username,
                 password: value.password,
@@ -102,6 +154,7 @@ function MyHeader(props) {
                 sessionStorage.setItem('token', response.data.token);
                 PubSub.publish('login', response.data.data);
                 closeRegisterModal();
+                showTagModal();
             } else {
                 this.alert2.innerHTML = response.data.message;
                 this.alert2.style.display = 'block';
@@ -172,8 +225,7 @@ function MyHeader(props) {
                 </Modal>
                 <Modal title="注册" visible={isRegisterModalVisible} destroyOnClose onCancel={closeRegisterModal} footer={[
                     <Button key="register" type="primary" style={{float: 'left'}} onClick={showLoginModal}>登录</Button>,
-                    <Button key="cancel" onClick={closeRegisterModal}>取消</Button>,
-                ]}>
+                    <Button key="cancel" onClick={closeRegisterModal}>取消</Button>]}>
                     <Form onFinish={register}>
                         <div ref={alert2} style={{backgroundColor: '#ffccc7', width: '100%', padding: '8px 15px', marginBottom: '10px', display: 'none'}}></div>
                         <Form.Item name="username" label="用户名" rules={[{ required: true, message: '用户名不能为空!'}]}>
@@ -200,6 +252,16 @@ function MyHeader(props) {
                         </Form.Item>
                         <Form.Item>
                             <Button type="primary" htmlType="submit" style={{width: '100%'}}>注册</Button>
+                        </Form.Item>
+                    </Form>
+                </Modal>
+                <Modal title="喜欢的类型" visible={isTagModalVisible} onCancel={closeTagModal} footer={null}>
+                    <Form onFinish={insertUserTags}>
+                        <Form.Item name="tags">
+                            <Checkbox.Group options={tagList} />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" style={{float: 'right'}}>确定</Button>
                         </Form.Item>
                     </Form>
                 </Modal>

@@ -2,8 +2,8 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ywj.music_recommend_system.front.dao.UserPlayTimesMapper">
-    <resultMap id="MusicVOMap" type="com.ywj.music_recommend_system.front.VO.MusicVO">
+<mapper namespace="com.music_recommend_system.front.dao.UserPlayTimesMapper">
+    <resultMap id="MusicVOMap" type="com.music_recommend_system.front.VO.MusicVO">
         <id column="music_id" property="musicId" jdbcType="VARCHAR" />
         <result column="music_name" property="musicName" jdbcType="VARCHAR" />
         <result column="artist_id" property="artistId" jdbcType="VARCHAR" />

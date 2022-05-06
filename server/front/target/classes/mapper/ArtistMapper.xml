@@ -2,18 +2,18 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ywj.music_recommend_system.front.dao.ArtistMapper">
-    <resultMap id="ArtistListVOMap" type="com.ywj.music_recommend_system.front.VO.ArtistListVO">
+<mapper namespace="com.music_recommend_system.front.dao.ArtistMapper">
+    <resultMap id="ArtistListVOMap" type="com.music_recommend_system.front.VO.ArtistListVO">
         <id column="artist_id" property="artistId" jdbcType="VARCHAR" />
         <result column="artist_name" property="artistName" jdbcType="VARCHAR" />
         <result column="artist_img" property="artistImg" jdbcType="VARCHAR" />
     </resultMap>
-    <resultMap id="ArtistVOMap" type="com.ywj.music_recommend_system.front.VO.ArtistVO">
+    <resultMap id="ArtistVOMap" type="com.music_recommend_system.front.VO.ArtistVO">
         <id column="artist_id" property="artistId" jdbcType="VARCHAR" />
         <result column="artist_name" property="artistName" jdbcType="VARCHAR" />
         <result column="artist_img" property="artistImg" jdbcType="VARCHAR" />
         <result column="artist_description" property="artistDescription" jdbcType="VARCHAR" />
-        <collection property="musicVOList" ofType="com.ywj.music_recommend_system.front.VO.MusicVO">
+        <collection property="musicVOList" ofType="com.music_recommend_system.front.VO.MusicVO">
             <id column="music_id" property="musicId" jdbcType="VARCHAR" />
             <result column="music_name" property="musicName" jdbcType="VARCHAR" />
             <result column="artist_id" property="artistId" jdbcType="VARCHAR" />
@@ -24,12 +24,12 @@
             <result column="time_length" property="timeLength" jdbcType="INTEGER" />
         </collection>
     </resultMap>
-    <resultMap id="ArtistAlbumVOMap" type="com.ywj.music_recommend_system.front.VO.ArtistVO">
+    <resultMap id="ArtistAlbumVOMap" type="com.music_recommend_system.front.VO.ArtistVO">
         <id column="artist_id" property="artistId" jdbcType="VARCHAR" />
         <result column="artist_name" property="artistName" jdbcType="VARCHAR" />
         <result column="artist_img" property="artistImg" jdbcType="VARCHAR" />
         <result column="artist_description" property="artistDescription" jdbcType="VARCHAR" />
-        <collection property="artistAlbumVOList" ofType="com.ywj.music_recommend_system.front.VO.ArtistAlbumVO">
+        <collection property="artistAlbumVOList" ofType="com.music_recommend_system.front.VO.ArtistAlbumVO">
             <id column="album_id" property="albumId" jdbcType="VARCHAR" />
             <result column="album_name" property="albumName" jdbcType="VARCHAR" />
             <result column="album_img" property="albumImg" jdbcType="VARCHAR" />
