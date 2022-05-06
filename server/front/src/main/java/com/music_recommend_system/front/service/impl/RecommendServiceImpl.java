@@ -7,17 +7,14 @@ import com.music_recommend_system.front.entity.Score;
 import com.music_recommend_system.front.entity.UserTag;
 import com.music_recommend_system.front.service.RecommendService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-/**
- * @author ywj
- * @date 2022/04/27
- * @className RecommendServiceImpl
- * @description
- */
+
 @Service
 public class RecommendServiceImpl implements RecommendService {
     @Autowired
@@ -30,23 +27,28 @@ public class RecommendServiceImpl implements RecommendService {
     MusicMapper musicMapper;
     @Autowired
     ScoreMapper scoreMapper;
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public List<MusicVO> listRecommendMusics(Integer userId) {
-        int userCount = userMapper.countUser();
-        List<MusicVO> musicVOList = null;
-        if (userCount > 100) {
-            List<Score> scoreList = scoreMapper.listAllScores();
-            musicVOList = collaborativeFiltering(scoreList, userId);
-        } else {
-            List<UserTag> tagList = userTagMapper.listUserTags(userId);
-            if (tagList.size() == 0) {
-                musicVOList = listHotMusics(userId);
+        List<MusicVO> musicVOList = (List<MusicVO>) redisTemplate.opsForValue().get("recommend:" + userId);
+        if (musicVOList == null) {
+            int userCount = userMapper.countUser();
+            if (userCount > 100) {
+                List<Score> scoreList = scoreMapper.listAllScores();
+                musicVOList = collaborativeFiltering(scoreList, userId);
             } else {
-                musicVOList = listMusicsByTags(userId, tagList);
+                List<UserTag> tagList = userTagMapper.listUserTags(userId);
+                if (tagList.size() == 0) {
+                    musicVOList = listHotMusics(userId);
+                } else {
+                    musicVOList = listMusicsByTags(userId, tagList);
+                }
             }
+            redisTemplate.opsForValue().set("recommend:" + userId, musicVOList, 1, TimeUnit.DAYS);
+            recommendedMapper.insertRecommendedMusics(musicVOList, userId);
         }
-        recommendedMapper.insertRecommendedMusics(musicVOList, userId);
         return musicVOList;
     }
 

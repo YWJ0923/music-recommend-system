@@ -28,8 +28,8 @@ public class RecommendController {
 
 
     @GetMapping("/recommend")
-    Result listRecommendMusics(@RequestParam("userId") Integer userId) {
-        List<MusicVO> recommendMusics = recommendService.listRecommendMusics(userId);
+    Result listRecommendMusics(User user) {
+        List<MusicVO> recommendMusics = recommendService.listRecommendMusics(user.getUserId());
         System.out.println(recommendMusics.size());
         if (recommendMusics != null) {
             return ResultUtils.success(recommendMusics);
@@ -37,5 +37,4 @@ public class RecommendController {
             return ResultUtils.failure();
         }
     }
-
 }

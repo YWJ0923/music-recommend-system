@@ -1,16 +1,16 @@
 spring:
   datasource:
     druid:
-      url: jdbc:mysql://localhost:3306/music_recommend_system?characterEncoding=utf8&setTimezone=Asia/Shanghai&useAffectedRows=true
+      url: jdbc:mysql://47.102.130.18:3306/music_recommend_system?characterEncoding=utf8&setTimezone=Asia/Shanghai&useAffectedRows=true
       username: root
-      password: root
+      password: yang12580
       initial-size: 1
       max-active: 20
       max-wait: 60000
       min-idle: 1
   redis:
-    host: 192.168.15.137
-    password: 123
+    host: 47.102.130.18
+    password: yang12580
     lettuce:
       shutdown-timeout: 100
 
